@@ -283,18 +283,4 @@ if [[ -n "$tracked_other_locks" ]]; then
 fi
 pass 'Git 未跟踪 npm/Yarn/Bun 锁文件'
 
-if git show HEAD:AGENTS.md 2>/dev/null | grep -q '<!-- BEGIN MULTICA-RUNTIME\|<!-- END MULTICA-RUNTIME'; then
-  fail 'HEAD 版本 AGENTS.md 包含 Multica Runtime Block'
-fi
-pass 'HEAD 版本 AGENTS.md 不含 Multica Runtime Block'
-
-if git show :AGENTS.md 2>/dev/null | grep -q '<!-- BEGIN MULTICA-RUNTIME\|<!-- END MULTICA-RUNTIME'; then
-  fail 'Git 索引版本 AGENTS.md 包含 Multica Runtime Block'
-fi
-pass 'Git 索引版本 AGENTS.md 不含 Multica Runtime Block'
-
-if grep -q '<!-- BEGIN MULTICA-RUNTIME\|<!-- END MULTICA-RUNTIME' AGENTS.md 2>/dev/null; then
-  warn '工作树 AGENTS.md 存在 Multica Runtime Overlay；运行中允许存在，但不得暂存或提交。'
-fi
-
 pass '仓库基础架构门禁通过'

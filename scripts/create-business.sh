@@ -40,7 +40,7 @@ if (!/^## 项目定位\n[\s\S]*?(?=^## )/m.test(agentSource)) {
   throw new Error('发布版本缺少项目定位章节，需先适配生成脚本');
 }
 fs.writeFileSync(agents, agentSource
-  .replace(/^## 项目定位\n[\s\S]*?(?=^## )/m, () => `## 项目定位\n\n本仓库是从 Ant Laravel Admin 派生的独立业务系统，可以实现用户明确授权的业务功能。业务目标和范围见 doc/business/requirements.md，安装与升级见 README.md。基础框架的“业务无关”定位仅适用于上游仓库。\n\n保留下方通用技术、安全与协作规范；业务代码通过 Business 扩展入口实现。合并框架更新时保留本项目定位、数据库和文档，审查并吸收上游通用规则。未获明确实施授权时不自行开发业务。\n\n`)
+  .replace(/^## 项目定位\n[\s\S]*?(?=^## )/m, () => `## 项目定位\n\n本仓库是从 Ant Laravel Admin 派生的独立业务系统，可以实现用户明确授权的业务功能。业务目标和范围见 doc/business/requirements.md，安装与升级见 README.md。基础框架的“业务无关”定位仅适用于上游仓库。\n\n保留下方通用技术、安全与提交规范；业务代码通过 Business 扩展入口实现。合并框架更新时保留本项目定位、数据库和文档，审查并吸收上游通用规则。未获明确实施授权时不自行开发业务。\n\n`)
   .replaceAll('ant_laravel_admin_test', `${project}_test`).replaceAll('ant_laravel_admin', project));
 const phpunit = path.join(target, 'api/phpunit.xml');
 fs.writeFileSync(phpunit, fs.readFileSync(phpunit, 'utf8').replace('value="ant_laravel_admin_test"', `value="${project}_test"`));

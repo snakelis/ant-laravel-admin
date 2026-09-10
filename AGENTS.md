@@ -101,22 +101,12 @@ web/    Ant Design Pro 应用
 
 没有实际成功执行的命令或测试，不得声称已经通过。如果必要检查无法运行，必须说明具体原因和未验证内容。
 
-## 多智能体协作
+## 提交规范
 
-- `AGENTS.md` 是所有智能体共同遵守的仓库规则；Multica 中的 Agent Instructions 与本文件冲突时，以本文件为准。
-- `lead-architect` 负责需求分析、任务拆分、接口契约、跨目录协调和最终集成判断。
-- `laravel-backend` 默认只修改 `api/**`。
-- `ant-pro-frontend` 默认只修改 `web/**`。
-- `quality-reviewer` 默认只审查，不直接修改代码；只有任务明确要求修复时才允许修改。
-- 根目录配置、公共约定和跨前后端修改必须由 `lead-architect` 协调。
-- 使用 Multica `local_directory` 资源时，会修改代码的任务必须串行执行；切换到隔离工作区后，也不得让多个智能体同时修改认证核心、权限模型、同一批迁移或相同配置文件。
-- GitHub 暂未完成认证不影响本地开发。用户明确启动实施任务后，由 `lead-architect` 为任务建立语义清晰的本地分支并保留本地提交；未经用户要求不得尝试推送。
-- 当前单一 `local_directory` 同一时刻只能检出一个分支，因此不同智能体不得通过频繁切换分支并行修改。需要并行开发时，必须先由 `lead-architect` 建立独立 `git worktree` 并确保修改路径互不冲突。
-- 分析、拆分和审查任务不应为了形式创建分支；只有实际实施任务才创建开发分支。
-- 每个实施任务必须明确目标、允许修改范围、不包含内容、依赖、验收标准和检查命令。
-- 用户没有明确要求开始实施时，智能体只能分析、拆分或审查，不得自行创建并启动实施任务。
-- 任务完成报告必须列出修改范围、实际执行的检查、失败项、未验证内容和剩余风险。
-
+- 实施前明确修改范围、验收标准和检查命令；未获实施授权时只分析或审查。
+- 实施时建立清晰命名的本地分支并保留提交，未经用户要求不推送。
+- 只暂存本次任务明确修改的路径，不使用 `git add -A` 或 `git add .`。
+- 完成报告说明修改范围、实际检查及未验证内容。
 
 ## 仓库级架构门禁
 
@@ -124,18 +114,10 @@ web/    Ant Design Pro 应用
 - 后端必须保留 Laravel 13、PHP 8.3+、Sanctum SPA Cookie、`spatie/laravel-permission`、OpenAPI 和仅开发环境 Telescope；Composer 锁文件必须存在并用于可复现安装。
 - 前端必须保留 Ant Design Pro v6.0.2 官方 Umi Max 工程基线，至少存在 `web/config/config.ts`、`web/config/routes.ts`、`@umijs/max` 和 `max dev` / `max build` 脚本。
 - 前端不得用 Vite 自建工程冒充 Ant Design Pro 官方工程；不得恢复 `web/vite.config.ts`、`web/index.html`、`web/src/main.tsx`、BrowserRouter 主路由体系或 `react-router-dom` 直接依赖。
-- 前端不得使用 `localStorage` 保存认证状态或长期令牌；后端菜单返回的组件标识只能通过受控注册表解析，不得基于后端返回值执行任意动态 `import()` 或任意组件路径。
+- 前端不得使用 `localStorage` 保存认证状态或长期令牌；后zhihou端菜单返回的组件标识只能通过受控注册表解析，不得基于后端返回值执行任意动态 `import()` 或任意组件路径。
 - pnpm 和 Composer 锁文件必须提交；不得提交 npm、Yarn、Bun 生成的锁文件。
 - `.env`、密码、Token、Cookie、Session 标识、内部日志、`node_modules/`、`vendor/`、`dist/`、本地生成 OpenAPI 产物和测试缓存不得进入 Git。
 - 根目录架构检查脚本 `scripts/verify-foundation.sh` 是仓库级门禁入口；修改固定技术栈、认证授权、菜单解析、依赖锁文件或仓库忽略规则后必须运行。
-
-## Multica 协作与提交门禁
-
-- 实施 Agent 禁止使用 `git add -A` 或 `git add .`，只能暂存 Issue 明确授权的路径。
-- `AGENTS.md` 中 `BEGIN MULTICA-RUNTIME` 到 `END MULTICA-RUNTIME` 是运行时自动覆盖层时，不得在任务运行期间手工编辑、恢复、暂存或提交该区块。
-- Git 索引版本和提交版本的 `AGENTS.md` 不得包含 Multica Runtime Block。
-- 运行中如工作树仅存在明确识别的 Runtime Overlay 差异，报告中必须单独说明；不得将其混同为项目代码修改。
-- “最终工作区干净”结论必须在任务退出后的共享目录或独立干净 worktree 中确认；运行中无法取得该证据时，必须列为未验证项。
 
 ## 完成标准
 
