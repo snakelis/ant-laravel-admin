@@ -1,0 +1,9 @@
+{
+  "extends": "./src/.umi/tsconfig.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "strict": true,
+    "noEmit": true,
+    "ignoreDeprecations": "6.0"
+  }
+}

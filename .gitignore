@@ -1,0 +1,13 @@
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 本地环境与敏感配置
+.env
+.env.*
+!.env.example
+
+# Multica / 本地智能体运行时上下文
+.agent_context/
+.multica/

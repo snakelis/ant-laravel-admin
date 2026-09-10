@@ -1,0 +1,40 @@
+{
+  "name": "ant-laravel-admin-web",
+  "private": true,
+  "version": "0.1.0",
+  "description": "基于 Ant Design Pro v6.0.2 / Umi Max 的业务无关后台管理前端。",
+  "scripts": {
+    "dev": "PORT=${PORT:-5173} UMI_ENV=dev MOCK=none max dev --host 0.0.0.0",
+    "start": "PORT=${PORT:-5173} UMI_ENV=dev MOCK=none max dev --host 0.0.0.0",
+    "build": "max build",
+    "preview": "max preview --host 0.0.0.0",
+    "lint": "eslint .",
+    "test:auth": "node --test tests/auth-session.test.mjs",
+    "tsc": "max setup && tsc --noEmit",
+    "typecheck": "max setup && tsc --noEmit --pretty false"
+  },
+  "browserslist": [
+    "defaults"
+  ],
+  "dependencies": {
+    "@ant-design/icons": "6.2.3",
+    "@ant-design/pro-components": "3.1.12-0",
+    "antd": "6.4.3",
+    "dayjs": "1.11.20",
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@types/node": "25.9.1",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@umijs/max": "4.6.51",
+    "eslint": "^9.32.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.38.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
