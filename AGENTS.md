@@ -18,7 +18,7 @@
 
 ## 固定技术栈
 
-- 后端运行环境：PHP 8.3+
+- 后端运行环境：PHP 8.3 / 8.4 / 8.5，各分支安全补丁下限以 `api/composer.json` 和 `doc/foundation/setup.md` 为准。
 - 后端框架：Laravel 13
 - 数据库：MySQL 8.0
 - 前端：Ant Design Pro v6、React、TypeScript
@@ -111,7 +111,7 @@ web/    Ant Design Pro 应用
 ## 仓库级架构门禁
 
 - 固定技术栈验收必须同时包含正向断言和反向断言，不能只凭功能、页面外观或构建结果通过。
-- 后端必须保留 Laravel 13、PHP 8.3+、Sanctum SPA Cookie、`spatie/laravel-permission`、OpenAPI 和仅开发环境 Telescope；Composer 锁文件必须存在并用于可复现安装。
+- 后端必须保留 Laravel 13、PHP 8.3 / 8.4 / 8.5 的安全补丁约束、Sanctum SPA Cookie、`spatie/laravel-permission`、OpenAPI 和仅开发环境 Telescope；Composer 锁文件必须存在并用于可复现安装。PHP 各分支必须分别限制补丁下限，门禁同时验证修复版本可用和旧补丁版本被拒绝，不得恢复宽泛的 `^8.3` 或使用平台模拟、忽略平台要求绕过实际安装与部署检查。
 - 前端必须保留 Ant Design Pro v6.0.2 官方 Umi Max 工程基线，至少存在 `web/config/config.ts`、`web/config/routes.ts`、`@umijs/max` 和 `max dev` / `max build` 脚本。
 - 前端不得用 Vite 自建工程冒充 Ant Design Pro 官方工程；不得恢复 `web/vite.config.ts`、`web/index.html`、`web/src/main.tsx`、BrowserRouter 主路由体系或 `react-router-dom` 直接依赖。
 - 前端不得使用 `localStorage` 保存认证状态或长期令牌；后zhihou端菜单返回的组件标识只能通过受控注册表解析，不得基于后端返回值执行任意动态 `import()` 或任意组件路径。

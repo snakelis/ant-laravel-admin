@@ -64,9 +64,10 @@ pass 'web/package.json 使用 Umi Max/Ant Design Pro 依赖和 max 脚本，且�
 node <<'NODE'
 const fs = require('node:fs');
 const composer = JSON.parse(fs.readFileSync('api/composer.json', 'utf8'));
+const lock = JSON.parse(fs.readFileSync('api/composer.lock', 'utf8'));
 const deps = { ...(composer.require || {}), ...(composer['require-dev'] || {}) };
 const required = {
-  php: '^8.3',
+  php: '~8.3.36 || ~8.4.27 || ~8.5.12',
   'laravel/framework': '^13.8',
   'laravel/sanctum': '^4.0',
   'spatie/laravel-permission': '^8.3',
@@ -76,8 +77,66 @@ const required = {
 for (const [name, version] of Object.entries(required)) {
   if (deps[name] !== version) throw new Error(`api/composer.json ${name} 版本约束应为 ${version}，实际为 ${deps[name] || '(缺失)'}`);
 }
+if (lock.platform?.php !== composer.require.php) {
+  throw new Error('api/composer.lock 的 PHP 平台约束必须与 composer.json 一致');
+}
+if (composer.config?.platform?.php !== undefined || lock['platform-overrides']?.php !== undefined) {
+  throw new Error('项目不得通过 config.platform.php 模拟 PHP 版本');
+}
 NODE
-pass 'api/composer.json 固定 Laravel 13、PHP 8.3、Sanctum、RBAC、OpenAPI 和 Telescope 基线'
+pass 'Composer 清单与锁文件固定 PHP 各分支安全补丁、Laravel 13、Sanctum、RBAC、OpenAPI 和 Telescope 基线'
+
+composer --working-dir=api validate --strict --no-check-publish --no-interaction
+pass 'Composer 清单及锁文件校验通过'
+
+node <<'NODE'
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const constraint = JSON.parse(fs.readFileSync('api/composer.json', 'utf8')).require.php;
+const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'foundation-php-'));
+const accepted = ['8.3.36', '8.3.37', '8.4.27', '8.4.28', '8.5.12', '8.5.13'];
+const rejected = ['8.2.35', '8.3.0', '8.3.6', '8.3.35', '8.4.0', '8.4.26', '8.5.0', '8.5.11', '8.6.0', '9.0.0'];
+try {
+  for (const [versions, expected] of [[accepted, true], [rejected, false]]) {
+    for (const version of versions) {
+      // 独立临时项目只声明 PHP 要求，不联网、不安装依赖，也不修改应用的配置或 vendor。
+      fs.writeFileSync(path.join(directory, 'composer.json'), JSON.stringify({
+        name: 'foundation/php-platform-check',
+        require: { php: constraint },
+        config: { platform: { php: version } },
+        repositories: [{ 'packagist.org': false }],
+      }));
+      const result = spawnSync('composer', [
+        'update', '--no-install', '--no-scripts', '--no-plugins', '--no-audit', '--no-interaction', '--no-progress',
+      ], {
+        cwd: directory,
+        encoding: 'utf8',
+        timeout: 30_000,
+        env: {
+          ...process.env,
+          COMPOSER: path.join(directory, 'composer.json'),
+          COMPOSER_HOME: directory,
+          COMPOSER_CACHE_DIR: path.join(directory, 'cache'),
+          COMPOSER_AUTH: '{}',
+          COMPOSER_DISABLE_NETWORK: '1',
+          COMPOSER_IGNORE_PLATFORM_REQ: '',
+          COMPOSER_IGNORE_PLATFORM_REQS: '0',
+        },
+      });
+      if (result.error) throw result.error;
+      const output = `${result.stdout}${result.stderr}`;
+      if (expected ? result.status !== 0 : result.status !== 2 || !output.includes('requires php')) {
+        throw new Error(`PHP ${version} 应${expected ? '接受' : '拒绝'}，Composer 退出码 ${result.status}\n${output}`);
+      }
+    }
+  }
+} finally {
+  fs.rmSync(directory, { recursive: true, force: true });
+}
+NODE
+pass 'Composer 实际解析接受 6 个修复/后续补丁版本，拒绝 10 个旧补丁或未支持分支版本（离线、不安装依赖）'
 
 router_matches="$(git grep -nE '\b(BrowserRouter|react-router-dom)\b' -- 'web/src' 'web/config' || true)"
 if [[ -n "$router_matches" ]]; then

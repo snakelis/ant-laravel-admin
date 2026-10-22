@@ -2,7 +2,7 @@
 
 可复用的后台管理基础框架，提供登录、用户、角色、权限、菜单与统一 API，不包含具体业务。业务项目独立运行，通过 Git 合并框架发布版本升级。
 
-后端：Laravel 13、PHP 8.3+、MySQL 8.0、Redis、Sanctum、Spatie 权限。前端：Ant Design Pro v6.0.2、React、TypeScript、Umi Max，使用 pnpm。
+后端：Laravel 13、PHP 8.3 / 8.4 / 8.5（安全补丁下限见安装说明）、MySQL 8.0、Redis、Sanctum、Spatie 权限。前端：Ant Design Pro v6.0.2、React、TypeScript、Umi Max，使用 pnpm。
 
 ## 文档
 

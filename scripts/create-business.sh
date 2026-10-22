@@ -23,6 +23,16 @@ node - "$target" "$project_title" "$release" "$foundation_root" <<'NODE'
 const fs = require('node:fs');
 const path = require('node:path');
 const [target, title, release, foundationRoot] = process.argv.slice(2);
+const readJson = (root, file) => JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
+const requiredPhp = readJson(foundationRoot, 'api/composer.json').require.php;
+const composer = readJson(target, 'api/composer.json');
+const lock = readJson(target, 'api/composer.lock');
+if (composer.require.php !== requiredPhp || lock.platform?.php !== requiredPhp) {
+  throw new Error(`发布标签 ${release} 的 PHP 安全基线与当前生成器不一致，拒绝生成业务配置。请选择包含当前安全修复的已发布标签，并使用对应版本的生成器。`);
+}
+if (composer.config?.platform?.php !== undefined || lock['platform-overrides']?.php !== undefined) {
+  throw new Error('发布标签不得通过 config.platform.php 模拟 PHP 版本，拒绝生成业务配置。');
+}
 const project = path.basename(path.resolve(target)).replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
 if (!project) throw new Error('目录名不能转换为有效数据库名');
 const app = path.join(target, 'web/src/business/application.ts');
